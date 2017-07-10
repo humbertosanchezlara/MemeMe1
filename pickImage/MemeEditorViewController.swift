@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  MemeEditorViewController.swift
 //  pickImage
 //
 //  Created by Humberto Sanchez Lara on 7/3/17.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController, UIImagePickerControllerDelegate,UINavigationControllerDelegate,UITextFieldDelegate {
+class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegate,UINavigationControllerDelegate,UITextFieldDelegate {
 
     @IBOutlet weak var pickedImage: UIImageView!
     @IBOutlet weak var cameraButton: UIBarButtonItem!
@@ -19,17 +19,14 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate,UINaviga
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setTextFieldFormat()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         
         super.viewWillAppear(animated)
-    
         cameraButton.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
-        
         subscribeToKeyboardNotifications()
-        
-        setTextFieldFormat()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -38,20 +35,27 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate,UINaviga
     }
     
     // MARK: UIImagePickerController Functions
-
-    @IBAction func takeImageCamera(_ sender: Any) {
+    
+    func pickAnImage(source: UIImagePickerControllerSourceType) {
         let controller = UIImagePickerController()
         controller.delegate = self
-        controller.sourceType = .camera
+        controller.sourceType = source
         self.present(controller, animated: true, completion: nil)
+    }
+
+    @IBAction func takeImageCamera(_ sender: Any) {
+        pickAnImage(source: .camera)
     }
     
     @IBAction func pickAnImage(_ sender: Any) {
-        let controller = UIImagePickerController()
-        controller.delegate = self
-        controller.sourceType = .photoLibrary
-        self.present(controller, animated: true, completion: nil)
+        pickAnImage(source: .photoLibrary)
+//        let controller = UIImagePickerController()
+//        controller.delegate = self
+//        controller.sourceType = .photoLibrary
+//        self.present(controller, animated: true, completion: nil)
     }
+    
+    
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         dismiss(animated: true, completion: nil)
@@ -84,6 +88,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate,UINaviga
         
         if bottomField.isFirstResponder {
             view.frame.origin.y -= getKeyboardHeight(notification)
+            view.frame.origin.y += 40
         }
         
     }
@@ -106,7 +111,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate,UINaviga
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
-        return true;
+        return true
     }
     
     func textFieldDidEndEditing(_ textField: UITextField, reason: UITextFieldDidEndEditingReason) {
@@ -130,19 +135,27 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate,UINaviga
     
     // MARK: Generate Meme
     
+    func hideBars(hideThem: Bool) {
+        if hideThem == true {
+            self.navigationController?.setNavigationBarHidden(true, animated: false)
+            toolBar.isHidden = true
+        } else {
+            self.navigationController?.setNavigationBarHidden(false, animated: false)
+            toolBar.isHidden = false
+        }
+    }
+    
     func generateMemedImage() -> UIImage {
         
-        self.navigationController?.setNavigationBarHidden(true, animated: false)
-        toolBar.isHidden = true
-        
+      
+        hideBars(hideThem: true)
         // Render view to an image
         UIGraphicsBeginImageContext(self.view.frame.size)
         view.drawHierarchy(in: self.view.frame, afterScreenUpdates: true)
         let memedImage:UIImage = UIGraphicsGetImageFromCurrentImageContext()!
         UIGraphicsEndImageContext()
         
-        self.navigationController?.setNavigationBarHidden(false, animated: false)
-        toolBar.isHidden = false
+        hideBars(hideThem: false)
         
         return memedImage
     }
