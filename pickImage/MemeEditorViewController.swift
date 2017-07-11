@@ -49,10 +49,6 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
     
     @IBAction func pickAnImage(_ sender: Any) {
         pickAnImage(source: .photoLibrary)
-//        let controller = UIImagePickerController()
-//        controller.delegate = self
-//        controller.sourceType = .photoLibrary
-//        self.present(controller, animated: true, completion: nil)
     }
     
     
@@ -89,6 +85,8 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         if bottomField.isFirstResponder {
             view.frame.origin.y -= getKeyboardHeight(notification)
             view.frame.origin.y += 40
+            // or use the following
+            // view.frame.origin.y = getKeyboardHeight(notification) * (-1)
         }
         
     }
@@ -136,13 +134,8 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
     // MARK: Generate Meme
     
     func hideBars(hideThem: Bool) {
-        if hideThem == true {
-            self.navigationController?.setNavigationBarHidden(true, animated: false)
-            toolBar.isHidden = true
-        } else {
-            self.navigationController?.setNavigationBarHidden(false, animated: false)
-            toolBar.isHidden = false
-        }
+        self.navigationController?.setNavigationBarHidden(hideThem, animated: false)
+        toolBar.isHidden = hideThem
     }
     
     func generateMemedImage() -> UIImage {
